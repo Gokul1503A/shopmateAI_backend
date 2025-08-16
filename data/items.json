@@ -1,0 +1,124 @@
+
+
+[
+  {
+    "id": 1,
+    "name": "Classic White T-Shirt",
+    "category": "Tops",
+    "price": 19.99,
+    "size": "M",
+    "color": "White",
+    "stock": 34,
+    "tags": ["cotton", "unisex", "casual"]
+  },
+  {
+    "id": 2,
+    "name": "Slim Fit Jeans",
+    "category": "Bottoms",
+    "price": 49.99,
+    "size": "32",
+    "color": "Blue",
+    "stock": 22,
+    "tags": ["denim", "men"]
+  },
+  {
+    "id": 3,
+    "name": "Floral Summer Dress",
+    "category": "Dresses",
+    "price": 59.99,
+    "size": "S",
+    "color": "Multicolor",
+    "stock": 18,
+    "tags": ["women", "summer", "floral"]
+  },
+  {
+    "id": 4,
+    "name": "Leather Biker Jacket",
+    "category": "Outerwear",
+    "price": 129.99,
+    "size": "L",
+    "color": "Black",
+    "stock": 7,
+    "tags": ["leather", "unisex", "trendy"]
+  },
+  {
+    "id": 5,
+    "name": "Athletic Sneakers",
+    "category": "Footwear",
+    "price": 79.99,
+    "size": "9",
+    "color": "White",
+    "stock": 15,
+    "tags": ["shoes", "sport"]
+  },
+  {
+    "id": 6,
+    "name": "Woolen Scarf",
+    "category": "Accessories",
+    "price": 24.99,
+    "size": "One Size",
+    "color": "Red",
+    "stock": 30,
+    "tags": ["winter", "unisex"]
+  },
+  {
+    "id": 7,
+    "name": "Chino Shorts",
+    "category": "Bottoms",
+    "price": 27.99,
+    "size": "M",
+    "color": "Khaki",
+    "stock": 20,
+    "tags": ["men", "summer"]
+  },
+  {
+    "id": 8,
+    "name": "Striped Polo Shirt",
+    "category": "Tops",
+    "price": 29.99,
+    "size": "L",
+    "color": "Navy",
+    "stock": 12,
+    "tags": ["men", "casual"]
+  },
+  {
+    "id": 9,
+    "name": "High-Waisted Skirt",
+    "category": "Bottoms",
+    "price": 39.99,
+    "size": "S",
+    "color": "Black",
+    "stock": 11,
+    "tags": ["women", "office"]
+  },
+  {
+    "id": 10,
+    "name": "Canvas Tote Bag",
+    "category": "Accessories",
+    "price": 15.99,
+    "size": "One Size",
+    "color": "Beige",
+    "stock": 40,
+    "tags": ["eco-friendly", "unisex"]
+  },
+  {
+    "id": 11,
+    "name": "Chunky Knit Sweater",
+    "category": "Tops",
+    "price": 54.99,
+    "size": "M",
+    "color": "Olive",
+    "stock": 13,
+    "tags": ["women", "winter"]
+  },
+  {
+    "id": 12,
+    "name": "Chelsea Boots",
+    "category": "Footwear",
+    "price": 99.99,
+    "size": "8",
+    "color": "Brown",
+    "stock": 9,
+    "tags": ["leather", "men", "classic"]
+  }
+]
