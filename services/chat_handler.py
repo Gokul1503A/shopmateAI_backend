@@ -3,6 +3,9 @@ import json
 import os
 from services.productfilter import filter_products
 import re
+import logging
+from services import crm_logger
+from datetime import datetime
 
 # Load the llama model
 llama = Llama(model_path="models/Llama-3.2-3B-Instruct-IQ3_M.gguf", n_ctx=2048, n_batch=512)
@@ -52,6 +55,9 @@ def chat_handler(user_message: str, chat_history: list) -> dict:
     }
 
 def chat_handler_stream(user_message: str, chat_history: list):
+    user_id = "user"
+    crm_logger.increment_visit(user_id)
+
     # Use filter_products from product_filter.py to get recommended products
     recommended_products = filter_products(user_message)
 
@@ -66,8 +72,13 @@ def chat_handler_stream(user_message: str, chat_history: list):
     # Prepare prompt with chat history and user message, using user/assistant roles consistently
     prompt = (
         "You are a helpful fashion shopkeeper named Laila, 23 F. "
-        "Respond politely, include only real products from the catalog below:\n"
+        "Respond naturally and politely to the customer. "
+        "ONLY recommend products from the catalog below when the customer is asking to see or explore items. "
+        "If they are just greeting, saying thanks, checking out, or not asking for products, do not recommend anything.\n\n"
         f"{products_str}\n\n"
+        "you need not recommend products if the user is not asking for them.\n\n"
+        "If the user asks for products, recommend them in a friendly way, like 'Here are some options for you:'.\n\n"
+        "no need to reply your actoins to the user, just reply but not your actions.\n\n"
     )
     for turn in chat_history:
         role = turn.get("role", "user")
@@ -76,6 +87,7 @@ def chat_handler_stream(user_message: str, chat_history: list):
         prompt += f"{role}: {turn['content']}\n"
     prompt += f"user: {user_message}\nassistant:"
 
+    full_reply = ""
     try:
         response_stream = llama.create_completion(
             prompt=prompt,
@@ -87,7 +99,35 @@ def chat_handler_stream(user_message: str, chat_history: list):
         for chunk in response_stream:
             token = chunk.get("choices", [{}])[0].get("text", "")
             if token:
-                yield token
+                full_reply += token
+                yield json.dumps({"token": token}) + "\n"
+        # After streaming completes, check if any recommended product name appears in full_reply
+        product_names = [p.get("name", "").lower() for p in recommended_products]
+        full_reply_lower = full_reply.lower()
+        if any(name and name in full_reply_lower for name in product_names):
+            if not recommended_products:
+                logging.warning("LLM recommended products but recommended_products list is empty.")
+            for p in recommended_products:
+                name = p.get("name", "Unknown")
+                price = p.get("price", "N/A")
+                image_url = p.get("image_url", "")
+                yield json.dumps({"recommended": {
+                    "name": name,
+                    "price": price,
+                    "image_url": image_url
+                }}) + "\n"
+        # Check for checkout intent
+        if "checkout" in full_reply_lower:
+            crm_logger.log_transaction(user_id, {
+                "timestamp": datetime.utcnow().isoformat(),
+                "source": "ai",
+                "products": recommended_products,
+                "total_amount": sum(p.get("price", 0) for p in recommended_products),
+                "delivery_address": None
+            })
+            yield json.dumps({"event": "checkout_intent"}) + "\n"
+        # Signal done at the end of the stream
+        yield json.dumps({"done": True}) + "\n"
     except Exception:
         yield "Sorry, there was an error processing your request. Please try again later."
 
