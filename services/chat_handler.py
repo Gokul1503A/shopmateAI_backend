@@ -4,7 +4,6 @@ import os
 from services.productfilter import filter_products
 import re
 import logging
-from services import crm_logger
 from datetime import datetime
 
 # Load the llama model
@@ -56,7 +55,6 @@ def chat_handler(user_message: str, chat_history: list) -> dict:
 
 def chat_handler_stream(user_message: str, chat_history: list):
     user_id = "user"
-    crm_logger.increment_visit(user_id)
 
     # Use filter_products from product_filter.py to get recommended products
     recommended_products = filter_products(user_message)
@@ -79,6 +77,7 @@ def chat_handler_stream(user_message: str, chat_history: list):
         "you need not recommend products if the user is not asking for them.\n\n"
         "If the user asks for products, recommend them in a friendly way, like 'Here are some options for you:'.\n\n"
         "no need to reply your actoins to the user, just reply but not your actions.\n\n"
+        "after purchase you should also ask customer if they want anything matching to the product they wanted"
     )
     for turn in chat_history:
         role = turn.get("role", "user")
@@ -116,16 +115,6 @@ def chat_handler_stream(user_message: str, chat_history: list):
                     "price": price,
                     "image_url": image_url
                 }}) + "\n"
-        # Check for checkout intent
-        if "checkout" in full_reply_lower:
-            crm_logger.log_transaction(user_id, {
-                "timestamp": datetime.utcnow().isoformat(),
-                "source": "ai",
-                "products": recommended_products,
-                "total_amount": sum(p.get("price", 0) for p in recommended_products),
-                "delivery_address": None
-            })
-            yield json.dumps({"event": "checkout_intent"}) + "\n"
         # Signal done at the end of the stream
         yield json.dumps({"done": True}) + "\n"
     except Exception:
