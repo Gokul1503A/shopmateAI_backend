@@ -3,7 +3,7 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from services.chat_handler import chat_handler_stream
 import json
-from datetime import datetime
+
 
 app = FastAPI()
 chat_history = []
